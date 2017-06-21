@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VueTube</title>
+
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <nav class="navbar navbar-inverse navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">VueTube</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="#" v-on:click="changePage('home')">Bookmark</a></li>
+        </ul> 
+        <form class="navbar-form navbar-left" v-on:submit="processSearch()">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Search" v-model="keyword" required autofocus>
+          </div>
+          <button type="submit" class="btn btn-success">Cari</button>
+        </form>
+      </div>
+    </nav>
+
+    <div class="container" id="home" v-show="currentPage === 'home'">
+      <div class="row">
+        <div class="col-md-12" v-if="videos">
+          <template v-for="(item, index) in videos">
+            <div class="col-md-3">
+              <div class="panel panel-default">
+                <a href="#" data-toggle="modal" data-target="#video-modal" v-on:click="nowPlaying = item">
+                  <img v-bind:src="item.snippet.thumbnails.medium.url" class="img-responsive">
+                </a>
+                <div class="panel-body">{{ item.snippet.title }}</div>
+                <div class="panel-footer">
+                  <button class="btn btn-danger btn-block" v-on:click="deleteVideo(item)">Hapus</button>
+                </div>
+              </div>
+            </div>
+            <div class="clearfix" v-if="(index+1) % 4 === 0"></div>
+          </template>
+        </div>
+        <div class="alert alert-info" v-else>Belum ada video disimpan.</div>
+      </div>
+    </div>
+
+    <div class="container" id="search" v-show="currentPage === 'search'">
+      <div class="row">
+        <div class="col-md-12">
+          <h3>Hasil Pencarian</h3>
+          <hr>
+          <div class="alert alert-info" v-if="loading">Loading ...</div>
+        </div>
+      </div>
+
+      <div class="row" v-if="results">
+        <template v-for="(item, index) in results.items">
+          <div class="col-md-3">
+            <div class="panel panel-default">
+              <a href="#" data-toggle="modal" data-target="#video-modal" v-on:click="nowPlaying = item">
+                <img v-bind:src="item.snippet.thumbnails.medium.url" class="img-responsive">
+              </a>
+              <div class="panel-body">{{ item.snippet.title }}</div>
+              <div class="panel-footer">
+                <button class="btn btn-primary btn-block" v-on:click="saveVideo(item)" v-if="!checkVideo(item)">Simpan</button>
+                <button class="btn btn-danger btn-block" v-on:click="deleteVideo(item)" v-if="checkVideo(item)">Hapus</button>
+              </div>
+            </div>
+          </div>
+          <div class="clearfix" v-if="(index+1) % 4 === 0"></div>
+        </template>
+        
+        <div class="col-md-12 text-center" style="margin-bottom:100px">
+          <button class="btn btn-success" v-on:click="loadMore()">Load More</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="video-modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="embed-responsive embed-responsive-16by9">
+              <iframe v-bind:src="getVideoUrl()"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
